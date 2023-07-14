@@ -102,14 +102,16 @@ require("rust-tools").setup({
 	},
 })
 
-require("typescript-tools").setup({
+require("typescript").setup({
 	root_dir = require("lspconfig.util").root_pattern(".git"),
-	capabilities = capabilities,
-	on_attach = function(client, bufnr)
-		client.server_capabilities.documentFormattingProvider = false
-		on_attach(client, bufnr)
-	end,
-	single_file_support = false,
+	server = {
+		single_file_support = false,
+		capabilities = capabilities,
+		on_attach = function(client, bufnr)
+			client.server_capabilities.documentFormattingProvider = false
+			on_attach(client, bufnr)
+		end,
+	},
 })
 
 require("deno-nvim").setup({

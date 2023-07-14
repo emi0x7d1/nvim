@@ -93,14 +93,14 @@ return require("lazy").setup({
 		end,
 	},
 	"nvim-telescope/telescope-file-browser.nvim",
-	"yioneko/nvim-cmp",
+	"hrsh7th/nvim-cmp",
 	"hrsh7th/cmp-nvim-lsp",
 	"onsails/lspkind.nvim",
 	"L3MON4D3/LuaSnip",
 	"saadparwaiz1/cmp_luasnip",
 	"rafamadriz/friendly-snippets",
 	{
-		"glepnir/lspsaga.nvim",
+		"nvimdev/lspsaga.nvim",
 		config = function()
 			require("lspsaga").setup({
 				lightbulb = {
@@ -183,6 +183,30 @@ return require("lazy").setup({
 	"emi2k01/material.nvim",
 	"b0o/schemastore.nvim",
 	{
+		"folke/noice.nvim",
+		opts = {
+			lsp = {
+				-- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+				override = {
+					["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+					["vim.lsp.util.stylize_markdown"] = true,
+					["cmp.entry.get_documentation"] = true,
+				},
+			},
+			-- you can enable a preset for easier configuration
+			presets = {
+				bottom_search = true, -- use a classic bottom cmdline for search
+				command_palette = true, -- position the cmdline and popupmenu together
+				long_message_to_split = true, -- long messages will be sent to a split
+				inc_rename = false, -- enables an input dialog for inc-rename.nvim
+				lsp_doc_border = false, -- add a border to hover docs and signature help
+			},
+		},
+		dependencies = {
+			"MunifTanjim/nui.nvim",
+		},
+	},
+	{
 		"stevearc/dressing.nvim",
 		config = function()
 			require("dressing").setup({
@@ -213,8 +237,8 @@ return require("lazy").setup({
 				style = "night",
 				transparent = true,
 				on_colors = function(colors)
-					colors.bg = "#08090d"
-					colors.bg_dark = "#06070a"
+					colors.bg = "#1a1b26"
+					colors.bg_dark = "#191a24"
 					colors.bg_float = colors.bg_dark
 					colors.bg_popup = colors.bg_dark
 					colors.bg_sidebar = colors.bg_dark
@@ -356,14 +380,6 @@ return require("lazy").setup({
 		"zbirenbaum/copilot-cmp",
 		config = function()
 			require("copilot_cmp").setup()
-		end,
-	},
-	"pmizio/typescript-tools.nvim",
-	{
-		"stevearc/oil.nvim",
-		dependencies = { "nvim-tree/nvim-web-devicons" },
-		config = function()
-			require("oil").setup()
 		end,
 	},
 	{

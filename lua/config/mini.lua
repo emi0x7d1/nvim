@@ -1,6 +1,8 @@
 require("mini.ai").setup({})
 require("mini.bufremove").setup({})
 require("mini.indentscope").setup({})
+require("mini.files").setup({})
+vim.keymap.set("n", "<leader>T", require("mini.files").open)
 require("mini.surround").setup({
     mappings = {
         add = '<leader>sa',          -- Add surrounding in Normal and Visual modes
