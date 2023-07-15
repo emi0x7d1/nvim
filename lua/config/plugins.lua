@@ -7,11 +7,8 @@ return require("lazy").setup({
 	},
 	"nvim-telescope/telescope-fzy-native.nvim",
 	"williamboman/mason.nvim",
-	"williamboman/mason-lspconfig.nvim",
-	"neovim/nvim-lspconfig",
 	"emi2k01/nord.nvim",
 	"https://gitlab.com/yorickpeterse/nvim-window.git",
-	"jose-elias-alvarez/null-ls.nvim",
 	{
 		"folke/todo-comments.nvim",
 		dependencies = { "nvim-lua/plenary.nvim" },
@@ -388,4 +385,18 @@ return require("lazy").setup({
 			require("reach").setup({})
 		end,
 	},
+	{
+		"neoclide/coc.nvim",
+		branch = "release",
+	},
+	{
+		"junegunn/fzf"
+	},
+	{
+		"junegunn/fzf.vim"
+	},
+	{
+		"antoinemadec/coc-fzf",
+		branch = "release"
+	}
 })

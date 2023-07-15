@@ -2,7 +2,7 @@ require("lualine").setup({
 	sections = {
 		lualine_c = {
 			"filename",
-			"lsp_progress",
+			"g:coc_status",
 		},
 	},
 	tabline = {

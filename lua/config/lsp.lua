@@ -1,206 +1,65 @@
 require("mason").setup()
-local nlspsettings = require("nlspsettings")
-nlspsettings.setup({})
-local cmp_lsp = require("cmp_nvim_lsp")
 local pickers = require("telescope.builtin")
 
 local M = {}
 
-local lspconfig = require("lspconfig")
-
-require("mason-lspconfig").setup({
-	ensure_installed = { "lua_ls", "rust_analyzer", "tsserver", "eslint", "tailwindcss", "prismals" },
-})
-
-local opts = { noremap = true, silent = true }
-vim.keymap.set("n", ",e", "<cmd>Lspsaga show_line_diagnostics ++unfocus<CR>", opts)
-vim.keymap.set("n", "[d", "<cmd>Lspsaga diagnostic_jump_prev<CR>", opts)
-vim.keymap.set("n", "]d", "<cmd>Lspsaga diagnostic_jump_next<CR>", opts)
-vim.keymap.set("n", ",q", vim.diagnostic.setloclist, opts)
-
-vim.diagnostic.config({
-	virtual_text = false,
-	underline = false,
-})
-
-local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
----@diagnostic disable-next-line: unused-local
-local on_attach = function(client, bufnr)
-	-- if client.supports_method("textDocument/formatting") then
-	-- 	vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-	-- 	vim.api.nvim_create_autocmd("BufWritePre", {
-	-- 		group = augroup,
-	-- 		buffer = bufnr,
-	-- 		callback = function()
-	-- 			vim.lsp.buf.format()
-	-- 		end,
-	-- 	})
-	-- end
-	-- vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
-
-	local bufopts = { noremap = true, silent = true, buffer = bufnr }
-	vim.keymap.set("n", "fn", require("nvim-navbuddy").open, bufopts)
-	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
-	vim.keymap.set("n", "gd", pickers.lsp_definitions, bufopts)
-	vim.keymap.set("n", "K", "<cmd>Lspsaga hover_doc<CR>", bufopts)
-	vim.keymap.set("n", "gi", pickers.lsp_implementations, bufopts)
-	vim.keymap.set("n", "<C-k>", "<cmd>Lspsaga signature_help<CR>", bufopts)
-	vim.keymap.set("n", "<space>D", pickers.lsp_type_definitions, bufopts)
-	vim.keymap.set("n", ",rn", "<cmd>Lspsaga rename<CR>", bufopts)
-	vim.keymap.set("n", ",ca", "<cmd>Lspsaga code_action<CR>", bufopts)
-	vim.keymap.set("n", "gr", pickers.lsp_references, bufopts)
-	vim.keymap.set("n", ",f", function()
-		vim.lsp.buf.format({ async = true })
-	end, bufopts)
-	vim.keymap.set("n", ",ha", require("rust-tools").hover_actions.hover_actions, bufopts)
+function map(mode, key, action, opts)
+	vim.keymap.set(mode, key, action, opts or { silent = true })
 end
 
-local capabilities = cmp_lsp.default_capabilities()
-capabilities = vim.tbl_extend("force", capabilities, {
-	workspace = {
-		didChangeWatchedFiles = {
-			dynamicRegistration = true,
-		},
-	},
-})
+function _G.check_back_space()
+	local col = vim.fn.col(".") - 1
+	return col == 0 or vim.fn.getline("."):sub(col, col):match("%s") ~= nil
+end
 
-lspconfig.lua_ls.setup({
-	capabilities = capabilities,
-	on_attach = function(client, bufnr)
-		on_attach(client, bufnr)
-	end,
-	settings = {
-		Lua = {
-			diagnostics = {
-				globals = { "vim" },
-			},
-		},
-	},
-})
+-- Use Tab for trigger completion with characters ahead and navigate
+-- NOTE: There's always a completion item selected by default, you may want to enable
+-- no select by setting `"suggest.noselect": true` in your configuration file
+-- NOTE: Use command ':verbose imap <tab>' to make sure Tab is not mapped by
+-- other plugins before putting this into your config
+local opts = { silent = true, noremap = true, expr = true, replace_keycodes = false }
+map("i", "<TAB>", 'coc#pum#visible() ? coc#pum#next(1) : v:lua.check_back_space() ? "<TAB>" : coc#refresh()', opts)
+map("i", "<S-TAB>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"]], opts)
 
-require("rust-tools").setup({
-	server = {
-		capabilities = capabilities,
-		on_attach = function(client, bufnr)
-			on_attach(client, bufnr)
-		end,
-		settings = {
-			["rust-analyzer"] = {
-				rustfmt = {
-					extraArgs = { "+nightly" },
-				},
-				checkOnSave = {
-					enable = true,
-				},
-				diagnostics = {
-					experimental = {
-						enable = true,
-					},
-				},
-			},
-		},
-	},
+map(
+	"i",
+	"<c-cr>",
+	[[coc#pum#visible() ? coc#pum#confirm() : "\<c-cr>"]],
+	{ silent = true, expr = true, noremap = true, replace_keycodes = true }
+)
+map("i", "<c-space>", "coc#refresh()", { silent = true, expr = true })
+map("n", "[g", "<Plug>(coc-diagnostics-prev)", { silent = true })
+map("n", "]g", "<Plug>(coc-diagnostics-next)", { silent = true })
+map("n", "gD", "<Plug>(coc-type-definition)")
+map("n", "gd", "<Plug>(coc-definition)")
+map("n", "K", "<cmd>call CocActionAsync('doHover')<cr>")
+map("n", "gi", "<Plug>(coc-implementation)")
+map("n", ",rn", "<Plug>(coc-rename)")
+map("n", ",ca", "<Plug>(coc-codeaction-cursor)")
+map("n", "gr", "<Plug>(coc-references)")
+map("n", ",f", "<Plug>(coc-format-selected)")
+vim.api.nvim_create_augroup("CocGroup", {})
+vim.api.nvim_create_autocmd("CursorHold", {
+	group = "CocGroup",
+	command = "silent call CocActionAsync('highlight')",
+	desc = "Highlight symbol under cursor on CursorHold",
 })
+map("n", ",o", ":<C-u>CocFzfList outline<cr>", { silent = true, nowait = true })
+map("n", ",d", ":<C-u>CocFzfList diagnostics<cr>", { silent = true, nowait = true })
 
-require("typescript").setup({
-	root_dir = require("lspconfig.util").root_pattern(".git"),
-	server = {
-		single_file_support = false,
-		capabilities = capabilities,
-		on_attach = function(client, bufnr)
-			client.server_capabilities.documentFormattingProvider = false
-			on_attach(client, bufnr)
-		end,
-	},
-})
+vim.api.nvim_exec([[
+inoremap <silent><expr> <TAB>
+      \ coc#pum#visible() ? coc#_select_confirm() :
+      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+      \ "\<TAB>"
 
-require("deno-nvim").setup({
-	server = {
-		capabilities = capabilities,
-		on_attach = function(client, bufnr)
-			on_attach(client, bufnr)
-		end,
-		root_dir = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc"),
-	},
-})
+let g:coc_snippet_next = '<tab>'
 
-lspconfig.graphql.setup({
-	capabilities = capabilities,
-	on_attach = function(client, bufnr)
-		client.server_capabilities.hoverProvider = false
-		on_attach(client, bufnr)
-	end,
-})
+" Use <C-j> for jump to next placeholder, it's default of coc.nvim
+let g:coc_snippet_next = '<c-j>'
 
-lspconfig.eslint.setup({
-	capabilities = capabilities,
-	on_attach = function(client, bufnr)
-		client.server_capabilities.documentFormattingProvider = false
-		client.server_capabilities.hoverProvider = false
-		on_attach(client, bufnr)
-	end,
-})
-
-lspconfig.zls.setup({
-	capabilities = capabilities,
-	on_attach = function(client, bufnr)
-		on_attach(client, bufnr)
-	end,
-})
-
-lspconfig.svelte.setup({
-	capabilities = capabilities,
-	on_attach = function(client, bufnr)
-		client.server_capabilities.documentFormattingProvider = false
-		on_attach(client, bufnr)
-	end,
-})
-
-lspconfig.marksman.setup({
-	capabilities = capabilities,
-	on_attach = function(client, bufnr)
-		on_attach(client, bufnr)
-	end,
-})
-
-lspconfig.tailwindcss.setup({
-	capabilities = capabilities,
-	on_attach = function(client, bufnr)
-		on_attach(client, bufnr)
-	end,
-	settings = {
-		tailwindCSS = {
-			experimental = {
-				classRegex = {
-					{ "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
-				},
-			},
-		},
-	},
-})
-
-lspconfig.jsonls.setup({
-	capabilities = capabilities,
-	on_attach = function(client, bufnr)
-		on_attach(client, bufnr)
-	end,
-	filetypes = { "json", "jsonc" },
-	settings = {
-		json = {
-			-- Schemas https://www.schemastore.org
-			schemas = require("schemastore").json.schemas(),
-			validate = { enable = true },
-		},
-	},
-})
-
-lspconfig.prismals.setup({
-	capabilities = capabilities,
-	on_attach = function(client, bufnr)
-		on_attach(client, bufnr)
-	end,
-})
-
-M.on_attach = on_attach
+" Use <C-k> for jump to previous placeholder, it's default of coc.nvim
+let g:coc_snippet_prev = '<c-k>'
+]], false)
 
 return M
