@@ -37,7 +37,7 @@ map("n", "gi", "<Plug>(coc-implementation)")
 map("n", ",rn", "<Plug>(coc-rename)")
 map("n", ",ca", "<Plug>(coc-codeaction-cursor)")
 map("n", "gr", "<Plug>(coc-references)")
-map("n", ",f", "<Plug>(coc-format-selected)")
+map("n", ",f", "<cmd>call CocActionAsync('format')<CR>")
 vim.api.nvim_create_augroup("CocGroup", {})
 vim.api.nvim_create_autocmd("CursorHold", {
 	group = "CocGroup",

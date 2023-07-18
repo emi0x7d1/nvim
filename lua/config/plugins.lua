@@ -398,5 +398,12 @@ return require("lazy").setup({
 	{
 		"antoinemadec/coc-fzf",
 		branch = "release"
+	},
+	{
+		"tjdevries/colorbuddy.nvim",
+		branch = "dev"
+	},
+	{
+		"jesseleite/nvim-noirbuddy"
 	}
 })
