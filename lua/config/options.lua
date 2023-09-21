@@ -12,11 +12,12 @@ util.map("n", "<leader><S-h>", "<cmd>tabmove -1<CR>")
 util.map("n", "<leader><esc>", "<cmd>nohlsearch<CR>")
 
 for i = 1, 9 do
-    util.map("n", "<leader>" .. i, "<cmd>tabnext " .. i .. "<CR>")
+	util.map("n", "<leader>" .. i, "<cmd>tabnext " .. i .. "<CR>")
 end
 
 vim.g.mapleader = " "
 
+vim.cmd("au FileType gitcommit setlocal tw=85")
 vim.o.conceallevel = 2
 vim.o.shortmess = vim.o.shortmess .. "c"
 vim.o.termguicolors = true
@@ -66,13 +67,14 @@ vim.cmd("hi WindowSwitch guibg='#434343' guifg='#EEEEEE'")
 -- vim.cmd("filetype indent off")
 -- vim.cmd("au FileType * setlocal nosmartindent")
 vim.cmd(
-"au FileType typescriptreact,javascriptreact,javascript,typescript,svelte setlocal shiftwidth=2 | setlocal formatoptions-=cro")
+	"au FileType typescriptreact,javascriptreact,javascript,typescript,svelte setlocal shiftwidth=2 | setlocal formatoptions-=cro"
+)
 
 vim.diagnostic.config({
-    virtual_text = true,
-    virtual_lines = {
-        only_current_line = true,
-    }
+	virtual_text = true,
+	virtual_lines = {
+		only_current_line = true,
+	},
 })
 
 vim.keymap.set("i", "<CR>", "<CR>x<BS>", { silent = true })
@@ -83,4 +85,5 @@ vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv", { silent = true })
 vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv", { silent = true })
 vim.keymap.set("n", "<A-j>", ":m .+1<CR>==", { silent = true })
 vim.keymap.set("n", "<A-k>", ":m .-2<CR>==", { silent = true })
-vim.keymap.set('v', '$', 'g_', { noremap = true })
+vim.keymap.set("v", "$", "g_", { noremap = true })
+vim.keymap.set("x", "p", "P", { noremap = true })

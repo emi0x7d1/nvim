@@ -69,10 +69,6 @@ return require("lazy").setup({
 				indent = {
 					enable = true,
 				},
-				autotag = {
-					enable = true,
-					filetypes = { "html", "typescriptreact", "javascriptreact", "htmldjango" },
-				},
 				playground = {
 					enable = true,
 				},
@@ -93,14 +89,14 @@ return require("lazy").setup({
 		end,
 	},
 	"nvim-telescope/telescope-file-browser.nvim",
-	"yioneko/nvim-cmp",
+	"hrsh7th/nvim-cmp",
 	"hrsh7th/cmp-nvim-lsp",
 	"onsails/lspkind.nvim",
 	"L3MON4D3/LuaSnip",
 	"saadparwaiz1/cmp_luasnip",
 	"rafamadriz/friendly-snippets",
 	{
-		"glepnir/lspsaga.nvim",
+		"nvimdev/lspsaga.nvim",
 		config = function()
 			require("lspsaga").setup({
 				lightbulb = {
@@ -120,34 +116,16 @@ return require("lazy").setup({
 			})
 		end,
 	},
-
-	"kylechui/nvim-surround",
-
-	{
-		"windwp/nvim-ts-autotag",
-		config = function()
-			require("nvim-ts-autotag").setup()
-		end,
-	},
-
 	{
 		"NMAC427/guess-indent.nvim",
 		config = function()
 			require("guess-indent").setup({})
 		end,
 	},
-
 	"ziglang/zig.vim",
-
 	"anuvyklack/hydra.nvim",
 	"echasnovski/mini.nvim",
 	"numToStr/Comment.nvim",
-	{
-		"ggandor/leap.nvim",
-		config = function()
-			require("leap").add_default_mappings()
-		end,
-	},
 	"savq/melange",
 	"Mofiqul/vscode.nvim",
 	"sindrets/diffview.nvim",
@@ -161,10 +139,35 @@ return require("lazy").setup({
 	"peitalin/vim-jsx-typescript",
 	{
 		"nvim-neorg/neorg",
-		config = function()
-			require("neorg").setup({})
-		end,
+		build = ":Neorg sync-parsers",
 		dependencies = { "nvim-lua/plenary.nvim" },
+		config = function()
+			vim.cmd([[autocmd FileType norg setlocal fo+=t tw=85]])
+			require("neorg").setup({
+				load = {
+					["core.defaults"] = {
+						config = {
+							-- disable = {
+							-- 	"core.esupports.hop",
+							-- },
+						},
+					},
+					-- ["core.keybinds"] = {
+					-- 	config = {
+					-- 		default_keybinds = false,
+					-- 	},
+					-- },
+					["core.concealer"] = {}, -- Adds pretty icons to your documents
+					["core.dirman"] = { -- Manages Neorg workspaces
+						config = {
+							workspaces = {
+								notes = "~/notes",
+							},
+						},
+					},
+				},
+			})
+		end,
 	},
 	{
 		"folke/trouble.nvim",
@@ -213,8 +216,8 @@ return require("lazy").setup({
 				style = "night",
 				transparent = true,
 				on_colors = function(colors)
-					colors.bg = "#08090d"
-					colors.bg_dark = "#06070a"
+					colors.bg = "#1a1b26"
+					colors.bg_dark = "#191a24"
 					colors.bg_float = colors.bg_dark
 					colors.bg_popup = colors.bg_dark
 					colors.bg_sidebar = colors.bg_dark
@@ -243,12 +246,12 @@ return require("lazy").setup({
 			vim.keymap.set("n", "<C-w>_", "<cmd>WindowsMaximizeVertically<CR>")
 			vim.keymap.set("n", "<C-w>|", "<cmd>WindowsMaximizeHorizontally<CR>")
 			vim.keymap.set("n", "<C-w>=", "<cmd>WindowsEqualize<CR>")
+			vim.o.winwidth = 80
+			vim.o.winwidth = 20
+			vim.o.equalalways = false
 			require("windows").setup({
-				autowidth = {
-					winwidth = 60,
-				},
 				animation = {
-					duration = 100,
+					duration = 120,
 				},
 			})
 		end,
@@ -270,6 +273,27 @@ return require("lazy").setup({
 	{
 		"nvim-pack/nvim-spectre",
 		config = function()
+			require("spectre").setup({
+				highlight = {
+					ui = "String",
+					search = "DiffDelete",
+					replace = "DiffAdd",
+				},
+				find_engine = {
+					["rg"] = {
+						cmd = "rg",
+						-- default args
+						args = {
+							"--color=never",
+							"--no-heading",
+							"--with-filename",
+							"--line-number",
+							"--column",
+							"--pcre2",
+						},
+					},
+				},
+			})
 			local spectre = require("spectre")
 			vim.keymap.set("n", "<leader>rr", spectre.open, { noremap = true })
 			vim.keymap.set("v", "<leader>rr", spectre.open_visual, { noremap = true })
@@ -284,16 +308,10 @@ return require("lazy").setup({
 		config = function()
 			require("gitlinker").setup()
 			vim.keymap.set("n", "<leader>gb", function()
-				require("gitlinker").get_buf_range_url(
-					"n",
-					{ action_callback = require("gitlinker.actions").open_in_browser }
-				)
+				require("gitlinker").get_buf_range_url("n")
 			end, { silent = true })
 			vim.keymap.set("v", "<leader>gb", function()
-				require("gitlinker").get_buf_range_url(
-					"v",
-					{ action_callback = require("gitlinker.actions").open_in_browser }
-				)
+				require("gitlinker").get_buf_range_url("v")
 			end, { silent = true })
 		end,
 	},
@@ -360,16 +378,151 @@ return require("lazy").setup({
 	},
 	"pmizio/typescript-tools.nvim",
 	{
-		"stevearc/oil.nvim",
-		dependencies = { "nvim-tree/nvim-web-devicons" },
-		config = function()
-			require("oil").setup()
-		end,
-	},
-	{
 		"toppair/reach.nvim",
 		config = function()
 			require("reach").setup({})
+		end,
+	},
+	"kylechui/nvim-surround",
+	{
+		"Wansmer/treesj",
+		config = function(opts)
+			require("treesj").setup(opts)
+			vim.keymap.set("n", "<leader>zj", require("treesj").join)
+			vim.keymap.set("n", "<leader>zs", require("treesj").split)
+			vim.keymap.set("n", "<leader>zt", require("treesj").toggle)
+		end,
+		opts = {
+			use_default_keymaps = false,
+		},
+	},
+	{
+		"axkirillov/hbac.nvim",
+		config = true,
+		opts = {
+			threshold = 8,
+		},
+	},
+	{
+		"stevearc/oil.nvim",
+		config = function()
+			vim.keymap.set("n", "<leader>mt", "<cmd>Oil %:h<CR>", { silent = true })
+			vim.keymap.set("n", "<leader>mT", function()
+				require("oil").open(vim.fn.getcwd())
+			end, { silent = true })
+			require("oil").setup({
+				keymaps = {
+					["<leader>sx"] = "actions.select_split",
+					["<leader>sv"] = "actions.select_vsplit",
+				},
+			})
+		end,
+	},
+	{
+		"jbyuki/venn.nvim",
+		config = function()
+			function _G.Toggle_venn()
+				local venn_enabled = vim.inspect(vim.b.venn_enabled)
+				if venn_enabled == "nil" then
+					vim.b.venn_enabled = true
+					vim.cmd([[setlocal ve=all]])
+					-- draw a line on HJKL keystokes
+					vim.api.nvim_buf_set_keymap(0, "n", "J", "<C-v>j:VBox<CR>", { noremap = true })
+					vim.api.nvim_buf_set_keymap(0, "n", "K", "<C-v>k:VBox<CR>", { noremap = true })
+					vim.api.nvim_buf_set_keymap(0, "n", "L", "<C-v>l:VBox<CR>", { noremap = true })
+					vim.api.nvim_buf_set_keymap(0, "n", "H", "<C-v>h:VBox<CR>", { noremap = true })
+					-- draw a box by pressing "f" with visual selection
+					vim.api.nvim_buf_set_keymap(0, "v", "f", ":VBox<CR>", { noremap = true })
+				else
+					vim.cmd([[setlocal ve=]])
+					vim.cmd([[mapclear <buffer>]])
+					vim.b.venn_enabled = nil
+				end
+			end
+
+			-- toggle keymappings for venn using <leader>v
+			vim.api.nvim_set_keymap("n", "<leader>v", ":lua Toggle_venn()<CR>", { noremap = true, silent = true })
+		end,
+	},
+	{
+		"NeogitOrg/neogit",
+		dependencies = {
+			"nvim-lua/plenary.nvim", -- required
+			"nvim-telescope/telescope.nvim", -- optional
+			"sindrets/diffview.nvim", -- optional
+		},
+		config = true,
+	},
+	{
+		"MaximilianLloyd/tw-values.nvim",
+		keys = {
+			{ "<leader>K", "<cmd>TWValues<cr>", desc = "Show tailwind CSS values" },
+		},
+		opts = {
+			border = "rounded", -- Valid window border style,
+			show_unknown_classes = true, -- Shows the unknown classes popup
+		},
+	},
+	{
+		"jcdickinson/codeium.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"hrsh7th/nvim-cmp",
+		},
+		config = function()
+			require("codeium").setup({})
+		end,
+	},
+	{
+		"rktjmp/lush.nvim",
+	},
+	{
+		"mcchrish/zenbones.nvim",
+		dependencies = {
+			"rktjmp/lush.nvim",
+		},
+		config = function()
+			vim.g.zenbones = { transparent_background = true }
+			vim.g.nordbones = { transparent_background = true }
+		end,
+	},
+	{
+		"Bryley/neoai.nvim",
+		config = true,
+	},
+	{
+		"gbrlsnchs/winpick.nvim",
+		config = true,
+	},
+	{
+		"gbprod/substitute.nvim",
+		config = function()
+			require("substitute").setup({})
+			vim.keymap.set("n", "<leader>s", require("substitute.range").operator, { noremap = true })
+			vim.keymap.set("x", "<leader>s", require("substitute.range").visual, { noremap = true })
+			vim.keymap.set("n", "<leader>ss", require("substitute.range").word, { noremap = true })
+
+			vim.keymap.set("n", "s", require("substitute").operator, { noremap = true })
+			vim.keymap.set("n", "ss", require("substitute").line, { noremap = true })
+			vim.keymap.set("n", "S", require("substitute").eol, { noremap = true })
+			vim.keymap.set("x", "s", require("substitute").visual, { noremap = true })
+
+			vim.keymap.set("n", "Cx", require("substitute.exchange").operator, { noremap = true })
+			vim.keymap.set("n", "Cxx", require("substitute.exchange").line, { noremap = true })
+			vim.keymap.set("x", "Cx", require("substitute.exchange").visual, { noremap = true })
+		end,
+	},
+	{
+		"tpope/vim-abolish",
+	},
+	{
+		"smjonas/live-command.nvim",
+		config = function()
+			require("live-command").setup({
+				commands = {
+					S = { cmd = "Subvert" },
+				},
+			})
 		end,
 	},
 })

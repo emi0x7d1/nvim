@@ -11,6 +11,10 @@ cmp.setup({
 	completion = {
 		completeopt = "menuone,noinsert,noselect",
 		keyword_length = 1,
+		get_trigger_characters = function(trigger_characters)
+			table.insert(trigger_characters, "/")
+			return trigger_characters
+		end,
 		autocomplete = {
 			cmp.TriggerEvent.InsertEnter,
 			cmp.TriggerEvent.TextChanged,
@@ -37,7 +41,8 @@ cmp.setup({
 	}),
 	experimental = { ghost_text = true },
 	sources = {
-		{ name = "copilot" },
+		{ name = "codeium" },
+		-- { name = "copilot" },
 		-- { name = "codeium" },
 		{ name = "nvim_lsp" },
 		{ name = "luasnip" },
@@ -53,12 +58,11 @@ cmp.setup({
 	},
 	sorting = {
 		comparators = {
-			cmp.config.compare.recently_used,
 			cmp.config.compare.offset,
+			cmp.config.compare.exact,
 			cmp.config.compare.score,
-			cmp.config.compare.sort_text,
-			cmp.config.compare.length,
-			cmp.config.compare.order,
+			cmp.config.compare.recently_used,
+			cmp.config.compare.kind,
 		},
 	},
 })
@@ -67,7 +71,7 @@ luasnip.config.setup({
 	update_events = { "InsertLeave", "TextChanged", "TextChangedI" },
 	region_check_events = { "InsertLeave", "CursorMoved" },
 	delete_check_events = { "TextChanged", "InsertLeave" },
-	enable_autosnippets = true
+	enable_autosnippets = true,
 })
 
 vim.keymap.set({ "s", "i" }, "<M-j>", function()

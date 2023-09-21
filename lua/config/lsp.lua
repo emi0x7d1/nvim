@@ -13,14 +13,15 @@ require("mason-lspconfig").setup({
 })
 
 local opts = { noremap = true, silent = true }
-vim.keymap.set("n", ",e", "<cmd>Lspsaga show_line_diagnostics ++unfocus<CR>", opts)
-vim.keymap.set("n", "[d", "<cmd>Lspsaga diagnostic_jump_prev<CR>", opts)
-vim.keymap.set("n", "]d", "<cmd>Lspsaga diagnostic_jump_next<CR>", opts)
+vim.keymap.set("n", ",e", vim.diagnostic.open_float, opts)
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
 vim.keymap.set("n", ",q", vim.diagnostic.setloclist, opts)
 
 vim.diagnostic.config({
 	virtual_text = false,
 	underline = false,
+	severity_sort = true,
 })
 
 local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
@@ -42,12 +43,13 @@ local on_attach = function(client, bufnr)
 	vim.keymap.set("n", "fn", require("nvim-navbuddy").open, bufopts)
 	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
 	vim.keymap.set("n", "gd", pickers.lsp_definitions, bufopts)
-	vim.keymap.set("n", "K", "<cmd>Lspsaga hover_doc<CR>", bufopts)
+	vim.keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
 	vim.keymap.set("n", "gi", pickers.lsp_implementations, bufopts)
-	vim.keymap.set("n", "<C-k>", "<cmd>Lspsaga signature_help<CR>", bufopts)
+	vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
 	vim.keymap.set("n", "<space>D", pickers.lsp_type_definitions, bufopts)
-	vim.keymap.set("n", ",rn", "<cmd>Lspsaga rename<CR>", bufopts)
-	vim.keymap.set("n", ",ca", "<cmd>Lspsaga code_action<CR>", bufopts)
+	vim.keymap.set("n", ",rn", vim.lsp.buf.rename, bufopts)
+	vim.keymap.set("n", ",ca", vim.lsp.buf.code_action, bufopts)
+	vim.keymap.set("v", ",ca", vim.lsp.buf.code_action, bufopts)
 	vim.keymap.set("n", "gr", pickers.lsp_references, bufopts)
 	vim.keymap.set("n", ",f", function()
 		vim.lsp.buf.format({ async = true })
@@ -67,6 +69,7 @@ capabilities = vim.tbl_extend("force", capabilities, {
 lspconfig.lua_ls.setup({
 	capabilities = capabilities,
 	on_attach = function(client, bufnr)
+		client.server_capabilities.documentFormattingProvider = false
 		on_attach(client, bufnr)
 	end,
 	settings = {
@@ -168,6 +171,7 @@ lspconfig.tailwindcss.setup({
 	end,
 	settings = {
 		tailwindCSS = {
+			classAttributes = { "class", "className", "classNames", "classList" },
 			experimental = {
 				classRegex = {
 					{ "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
@@ -193,6 +197,42 @@ lspconfig.jsonls.setup({
 })
 
 lspconfig.prismals.setup({
+	capabilities = capabilities,
+	on_attach = function(client, bufnr)
+		on_attach(client, bufnr)
+	end,
+})
+
+lspconfig.dartls.setup({
+	capabilities = capabilities,
+	on_attach = function(client, bufnr)
+		on_attach(client, bufnr)
+	end,
+})
+
+lspconfig.serve_d.setup({
+	capabilities = capabilities,
+	on_attach = function(client, bufnr)
+		on_attach(client, bufnr)
+	end,
+})
+
+lspconfig.gopls.setup({
+	capabilities = capabilities,
+	on_attach = function(client, bufnr)
+		on_attach(client, bufnr)
+	end,
+})
+
+lspconfig.emmet_language_server.setup({
+	capabilities = capabilities,
+	filetypes = { "html", "javascriptreact", "javascript", "typescriptreact", "css" },
+	on_attach = function(client, bufnr)
+		on_attach(client, bufnr)
+	end,
+})
+
+lspconfig.cssls.setup({
 	capabilities = capabilities,
 	on_attach = function(client, bufnr)
 		on_attach(client, bufnr)

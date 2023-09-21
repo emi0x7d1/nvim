@@ -1,1 +1,1 @@
-require"nvim-treesitter.parsers".filetype_to_parsername.htmldjango = 'html'
+vim.treesitter.language.register("html", "htmldjango")

@@ -3,7 +3,7 @@ local lsp = require("config/lsp")
 require("null-ls").setup({
 	sources = {
 		require("null-ls").builtins.formatting.stylua,
-		require("null-ls").builtins.formatting.prettier.with({
+		require("null-ls").builtins.formatting.prettierd.with({
 			filetypes = {
 				"html",
 				"json",
@@ -17,7 +17,8 @@ require("null-ls").setup({
 				"graphql",
 				"gql",
 				"scss",
-				"sass"
+				"sass",
+				"css",
 			},
 		}),
 		-- require("null-ls").builtins.diagnostics.eslint_d,

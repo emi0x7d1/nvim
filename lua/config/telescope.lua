@@ -58,15 +58,31 @@ vim.api.nvim_set_keymap("n", "<space>wT", "<cmd>Telescope file_browser path=%:p:
 
 local tbuiltin = require("telescope.builtin")
 vim.keymap.set("n", "<leader>ff", function()
-	tbuiltin.find_files()
+	tbuiltin.find_files({
+		find_command = function()
+			return {
+				"fd",
+				"--hidden",
+				"--exclude=.git",
+			}
+		end,
+	})
 	-- require('fzf-lua').files()
 end)
 vim.keymap.set("n", "<leader>FF", function()
-	tbuiltin.find_files({ cwd = vim.fn.expand("%:p:h") })
+	tbuiltin.find_files({
+		cwd = vim.fn.expand("%:p:h"),
+		find_command = { "fd", "--hidden", "--exclude=.git" },
+		hidden = true,
+	})
 	-- require('fzf-lua').files({ cwd = vim.fn.expand("%:p:h") })
 end)
 vim.keymap.set("n", "<leader>fF", function()
-	tbuiltin.find_files({ cwd = vim.fn.expand("%:p:h:h") })
+	tbuiltin.find_files({
+		cwd = vim.fn.expand("%:p:h:h"),
+		find_command = { "fd", "--hidden", "--exclude=.git" },
+		hidden = true,
+	})
 	-- require('fzf-lua').files({ cwd = vim.fn.expand("%:p:h:h") })
 end)
 vim.keymap.set("n", "<leader>fb", function()
